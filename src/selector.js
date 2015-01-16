@@ -1,14 +1,24 @@
 var traverseDomAndCollectElements = function(matchFunc, startEl) {
   var resultSet = [];
-  
   if (typeof startEl === "undefined") {
     startEl = document.body;
   }
+    var allNodes = startEl.children;
+    for (var i = 0; i < allNodes.length; i++){
+      var lowerNodes = allNodes[i].children;
+        if (matchFunc(allNodes[i])){
+          resultSet.push(allNodes[i]);
+        }
+      for (var x = 0; x < lowerNodes.length; x++){
+        if (matchFunc(lowerNodes[x])){
+          resultSet.push(lowerNodes[x]);
+        }
+      }
+    }
 
   // your code here
   // traverse the DOM tree and collect matching elements in resultSet
   // use matchFunc to identify matching elements
-
   return resultSet;
 };
 
@@ -48,58 +58,55 @@ var matchFunctionMaker = function(selector) {
   var selectorType = selectorTypeMatcher(selector);
   var matchFunction;
       if (selectorType === "id") {
-        var matchFunction = function(element){
-            if (element.getAttribute('id').toString() == splitSelector){
-              return true;
+        matchFunction = function(element){
+            if (element.hasAttribute('id')){
+              if (element.getAttribute('id').toString() == splitSelector){
+                  
+                return true;
+              }
+              else{
+                return false;
+              }
             }
-            else{
-              return false;
-            }
-          /*console.log(selector);
-          
-          var allNodes = document.body.children;
-          //console.log(document.body.children);
-          for(var i = 0; i < document.body.children.length; i++) {
-            if (allNodes[i].hasAttribute('id')){
-                console.log(allNodes[i].getAttribute('id'))
-                if (allNodes[i].getAttribute('id') == cleanSelector){
-                  return true;
-                }
-            
-            }
-          }
-          return false;*/
         }
         // define matchFunction for id
       } else if (selectorType === "class") {
         // define matchFunction for class
         matchFunction = function(element){
-          var classes = element.getAttribute('class').split(" ");
-          for (var i = 0; i < classes.length; i++){
-            if (classes[i] == splitSelector){
-              return true;
+          
+          if (element.hasAttribute('class')){
+            var classes = element.getAttribute('class').split(" ");
+            for (var i = 0; i < classes.length; i++){
+              if (classes[i] == splitSelector){
+                
+                return true;
+              }
             }
+            return false;
           }
-          return false;
         }
         
       } else if (selectorType === "tag.class") {
         // define matchFunction for tag.class
         var split_tag = forTagNames.split(".");
         matchFunction = function(element){
-          var classes = element.getAttribute('class').split(" ");  
-          for (var i = 0; i < classes.length; i++){
-            if (classes[i] == split_tag[1] && element.tagName.toString().toLowerCase() == split_tag[0]){
-              return true;
+          if (element.hasAttribute('class')){
+            var classes = element.getAttribute('class').split(" ");  
+            for (var i = 0; i < classes.length; i++){
+              if (classes[i] == split_tag[1] && element.tagName.toString().toLowerCase() == split_tag[0]){
+                
+                return true;
+              }
             }
+            return false;
           }
-          return false;
         }
         
       } else if (selectorType === "tag") {
         // define matchFunction for tag
         matchFunction = function(element){
           if (element.tagName.toString().toLowerCase() == forTagNames){
+              
               return true;
             }
             else{
@@ -108,8 +115,11 @@ var matchFunctionMaker = function(selector) {
           
         }
 
-  }
+      } 
 
+        else {
+          return false;
+        }
   return matchFunction;
 };
 
